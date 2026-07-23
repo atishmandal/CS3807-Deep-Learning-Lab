@@ -84,3 +84,13 @@ Dependencies (i.e. packages required by OverLeaf):
 \usepackage[cmintegrals]{newtxmath}
 \usepackage{bm}
 \usepackage{titlesec}
+
+
+Instructions:
+1) Upload all files to an Overleaf project.
+2) Ensure that all plot images are present in the project directory.
+3) Compile the document using pdfLaTeX.
+4) No additional configuration is required.
+
+By Atish Mandal
+24110074
