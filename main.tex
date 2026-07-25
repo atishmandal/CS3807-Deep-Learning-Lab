@@ -1,0 +1,924 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array,longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{float}
+
+\begin{document}
+
+\begin{center}
+\Large\textbf{Shiv Nadar University Chennai}\\[2mm]
+\end{center}
+
+\renewcommand{\arraystretch}{1.4}
+
+\begin{tabular}{|p{3.5cm}|p{8cm}|p{2cm}|}
+\hline
+Degree \& Branch & B.Tech Artificial Intelligence \& Data Science & Semester V\\ \hline
+Subject Code \& Name & CS3807 -- Deep Learning Laboratory & AY: 2026--27\\ \hline
+\end{tabular}
+
+\vspace{3mm}
+
+\begin{center}
+\Large\textbf{Experiment 1}\\
+\large\textbf{Implementation of a Single Layer Perceptron for Binary Classification}
+\end{center}
+
+%----------------------------------------------------------
+
+\section*{1. Objective}
+
+The objective of this experiment is to understand the concept of an artificial neuron and implement a Single Layer Perceptron from scratch for binary classification. Students will learn the perceptron learning algorithm, understand the importance of activation functions, visualize the learning process, and evaluate the classifier using a real-world dataset.
+
+%----------------------------------------------------------
+
+\section*{2. Tasks to be Performed}
+
+\begin{enumerate}[leftmargin=*]
+\item Download and understand the dataset.
+\item Perform Exploratory Data Analysis (EDA).
+\item Preprocess the dataset.
+\item Implement a Single Layer Perceptron from scratch.
+\item Train the model using the perceptron learning rule.
+\item Evaluate the classifier using standard performance metrics.
+\item Analyze the effect of different learning rates.
+\item Compare the implementation with Scikit-learn's Perceptron (optional).
+\end{enumerate}
+
+%----------------------------------------------------------
+
+\section*{3. Background Theory}
+
+An Artificial Neuron is the fundamental building block of a neural network. It receives one or more input features, multiplies them by corresponding weights, adds a bias term, and applies an activation function to determine the output.
+
+The Single Layer Perceptron is the earliest supervised learning algorithm capable of solving linearly separable binary classification problems.
+
+\subsection*{Mathematical Formulation}
+
+Weighted Sum
+
+\[
+z=\mathbf{w}^{T}\mathbf{x}+b
+\]
+
+where
+
+\begin{itemize}
+\item $\mathbf{x}$ : Input vector
+\item $\mathbf{w}$ : Weight vector
+\item $b$ : Bias
+\item $z$ : Linear combination
+\end{itemize}
+
+Prediction
+
+\[
+\hat y=f(z)
+\]
+
+Weight Update Rule
+
+\[
+\mathbf{w}_{new}
+=
+\mathbf{w}_{old}
++
+\eta
+(y-\hat y)
+\mathbf{x}
+\]
+
+Bias Update
+
+\[
+b_{new}
+=
+b_{old}
++
+\eta
+(y-\hat y)
+\]
+
+where $\eta$ denotes the learning rate.
+
+%----------------------------------------------------------
+
+\section*{4. Activation Functions}
+
+An activation function determines the output of a neuron based on the weighted sum of its inputs. It introduces non-linearity, enabling neural networks to learn complex patterns. Although the perceptron uses only the Step Activation Function, modern deep learning models employ differentiable activation functions for efficient optimization through backpropagation.
+
+\subsection*{Step Activation Function}
+
+\[
+f(z)=
+\begin{cases}
+1,&z\ge0\\
+0,&z<0
+\end{cases}
+\]
+
+The Step Activation Function produces a binary output and is therefore suitable only for linearly separable binary classification problems.
+
+\begin{center}
+\begin{tabular}{|p{2.5cm}|p{3cm}|p{6cm}|}
+\hline
+\textbf{Activation} & \textbf{Output Range} & \textbf{Typical Applications}\\
+\hline
+Step & $\{0,1\}$ & Classical Perceptron\\
+\hline
+Sigmoid & $(0,1)$ & Binary Classification Output Layer\\
+\hline
+Tanh & $(-1,1)$ & Hidden Layers (Traditional Networks)\\
+\hline
+ReLU & $[0,\infty)$ & Hidden Layers in CNNs and MLPs\\
+\hline
+Leaky ReLU & $(-\infty,\infty)$ & Avoiding Dying ReLU\\
+\hline
+Softmax & $(0,1)$ & Multi-class Classification Output Layer\\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Note:} This experiment uses only the Step Activation Function. The remaining activation functions will be studied in subsequent experiments involving Multilayer Perceptrons and Deep Neural Networks.
+
+%----------------------------------------------------------
+
+\section*{5. Dataset Description}
+
+\textbf{Dataset:} Banknote Authentication Dataset
+
+\textbf{Source:} UCI Machine Learning Repository
+
+\textbf{Download Link:}
+
+\url{https://archive.ics.uci.edu/dataset/267/banknote+authentication}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Instances & 1372\\
+\hline
+Features & 4 Numerical Features\\
+\hline
+Classes & 2\\
+\hline
+Missing Values & None\\
+\hline
+Task & Binary Classification\\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Feature Description}
+
+\begin{itemize}
+\item Variance
+\item Skewness
+\item Curtosis
+\item Entropy
+\end{itemize}
+
+Target Class
+
+\begin{itemize}
+\item 0 -- Authentic Banknote
+\item 1 -- Forged Banknote
+\end{itemize}
+
+%----------------------------------------------------------
+
+\section*{6. Experimental Procedure}
+
+\textbf{Task 1: Dataset Exploration}
+
+\begin{itemize}
+\item Load the dataset.
+\item Display the first five samples.
+\item Determine dataset dimensions.
+\item Identify missing values.
+\item Display descriptive statistics.
+\end{itemize}
+
+\textbf{Expected Output}
+
+Dataset Dimensions: (1372, 5)
+
+\vspace{3mm}
+\textbf{First five samples:}
+\begin{center}
+\begin{tabular}{crrrrrc}
+\toprule
+\textbf{Index} & \textbf{Variance} & \textbf{Skewness} & \textbf{Curtosis} & \textbf{Entropy} & \textbf{Class} \\
+\midrule
+0 & 3.62160  &  8.6661 & -2.8073 & -0.44699 & 0 \\
+1 & 4.54590  &  8.1674 & -2.4586 & -1.46210 & 0 \\
+2 & 3.86600  & -2.6383 &  1.9242 &  0.10645 & 0 \\
+3 & 3.45660  &  9.5228 & -4.0112 & -3.59440 & 0 \\
+4 & 0.32924  & -4.4552 &  4.5718 & -0.98880 & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+\textbf{Missing Values Summary:}
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Column} & \textbf{Missing Values} \\
+\midrule
+Variance & 0 \\
+Skewness & 0 \\
+Curtosis & 0 \\
+Entropy  & 0 \\
+Class    & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+\textbf{Descriptive Statistics:}
+\begin{center}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Statistic} & \textbf{Variance} & \textbf{Skewness} & \textbf{Curtosis} & \textbf{Entropy} & \textbf{Class} \\
+\midrule
+count & 1372.000000 & 1372.000000 & 1372.000000 & 1372.000000 & 1372.000000 \\
+mean  &    0.433735 &    1.922353 &    1.397627 &   -1.191657 &    0.444606 \\
+std   &    2.842763 &    5.869047 &    4.310030 &    2.101013 &    0.497103 \\
+min   &   -7.042100 &  -13.773100 &   -5.286100 &   -8.548200 &    0.000000 \\
+25\%  &   -1.773000 &   -1.708200 &   -1.574975 &   -2.413450 &    0.000000 \\
+50\%  &    0.496180 &    2.319650 &    0.616630 &   -0.586650 &    0.000000 \\
+75\%  &    2.821475 &    6.814625 &    3.179250 &    0.394810 &    1.000000 \\
+max   &    6.824800 &   12.951600 &   17.927400 &    2.449500 &    1.000000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{4mm}
+
+\textbf{Task 2: Exploratory Data Analysis}
+
+Generate
+
+\begin{itemize}
+\item Histograms
+\item Correlation Heatmap
+\item Scatter Plot
+\item Boxplots
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 3: Data Preprocessing}
+
+\begin{itemize}
+\item Normalize all numerical features.
+\item Split the dataset into Training (80\%) and Testing (20\%).
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 4: Perceptron Implementation}
+
+Implement from scratch
+
+\begin{itemize}
+\item Weight Initialization
+\item Bias Initialization
+\item Step Activation Function
+\item Forward Propagation
+\item Perceptron Learning Rule
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 5: Model Training}
+
+Display
+
+\begin{itemize}
+\item Epoch Number
+\item Misclassified Samples
+\item Updated Weights
+\item Updated Bias
+\end{itemize}
+
+\vspace{2mm}
+
+\textbf{Task 6: Model Evaluation}
+
+Compute
+
+\begin{itemize}
+\item Accuracy
+\item Precision
+\item Recall
+\item F1-score
+\item Confusion Matrix
+\end{itemize}
+
+%----------------------------------------------------------
+
+\section*{7. Mandatory Plots}
+
+\begin{longtable}{|p{3.4cm}|p{3.4cm}|p{6cm}|}
+\hline
+\textbf{Plot} & \textbf{Purpose} & \textbf{Expected Inference}\\
+\hline
+Feature Histograms & Distribution Analysis & Identify skewness and outliers.\\
+\hline
+Correlation Heatmap & Feature Relationship & Observe highly correlated features.\\
+\hline
+Scatter Plot & Class Distribution & Determine whether classes are approximately linearly separable.\\
+\hline
+Training Error vs Epoch & Learning Behaviour & Verify convergence of the perceptron.\\
+\hline
+Weight Evolution & Parameter Analysis & Observe stabilization of learned weights.\\
+\hline
+Bias Evolution & Parameter Analysis & Understand the role of the bias term.\\
+\hline
+Confusion Matrix & Performance Evaluation & Interpret TP, FP, TN and FN.\\
+\hline
+Learning Rate Comparison & Hyperparameter Study & Compare convergence behaviour for different learning rates.\\
+\hline
+Decision Boundary (Optional) & Visualization & Illustrate the separating hyperplane using two selected features.\\
+\hline
+\end{longtable}
+
+\section*{Generated Plots and Observations}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{1. Feature Histograms}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{01_feature_histograms.png}
+    \caption{Feature Histograms of the Banknote Authentication Dataset}
+\end{figure}
+
+\textbf{Observation:}
+
+Variance and skewness differ considerably between class 0 and class 1. Entropy overlaps quite a bit across both classes, making it very less informative.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{2. Correlation Heatmap}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{02_correlation_heatmap.png}
+    \caption{Correlation Heatmap of Dataset Features}
+\end{figure}
+
+\textbf{Observation:}
+
+Variance has a strong negative correlation with targest class, i.e. it is very informative for such classification. Skewness also shows decent magnitude of correlation.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{3. Variance vs Skewness Scatter Plot}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{03_scatter_variance_skewness.png}
+    \caption{Scatter Plot of Variance versus Skewness}
+\end{figure}
+
+\textbf{Observation:}
+
+Class 0 (authentic) is concentrated in the positive region, while class 1 (fake) is mostly negative with similar horizontal spread.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{4. Training Error vs Epoch}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{05_training_error_vs_epoch.png}
+    \caption{Training Error Across Epochs}
+\end{figure}
+
+\textbf{Observation:}
+
+After the first few iterations, the training error drops significantly. Beyond 5 epochs, the error oscillates every now and then before settling down at around 20-30 misclassified samples.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{5. Weight Evolution}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{06_weight_evolution.png}
+    \caption{Evolution of Perceptron Weights}
+\end{figure}
+
+\textbf{Observation:}
+
+Entropy reaches the neighbourhood of zero quickly and oscillates; signifying how little it contributes. The other 3 features steadily become more negative before eventually settling down.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{6. Bias Evolution}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{07_bias_evolution.png}
+    \caption{Evolution of Perceptron Bias}
+\end{figure}
+
+\textbf{Observation:}
+
+Bias rises steadily before eventually settling at around 0.22. This is probably to account for the decision hyperplane.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{7. Confusion Matrix}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{08_confusion_matrix.png}
+    \caption{Confusion Matrix of the Perceptron Classifier}
+\end{figure}
+
+\textbf{Observation:}
+
+Only 1 FP and FN each, signifying most training errors are near the boundary.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{8. Learning Rate Comparison}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{09_learning_rate_comparison.png}
+    \caption{Performance Comparison Across Different Learning Rates}
+\end{figure}
+
+\textbf{Observation:}
+
+All 3 curves overlap exactly and give the same trajectory. Feature normalisation helps; and since this is a sample dataset, a magnitude difference of the order of 10 does not give drastic differences.
+
+\vspace{8mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{9. Weight Evolution by Learning Rate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{11_weight_evolution_by_lr.png}
+    \caption{Weight Evolution for Different Learning Rates}
+\end{figure}
+
+\textbf{Observation:}
+
+Except entropy, the other 3 features do not evolve much at learning rates of 0.001 and 0.01. However, they steadily decrease at 0.1 and converge. In the case of entropy, 0.001 and 0.01 prove to be fairly stable, while 0.1 results in wild oscillations.
+
+\vspace{8mm}
+
+
+
+
+%----------------------------------------------------------
+
+\section*{8. Performance Tables}
+
+\textbf{Training Summary}
+
+\vspace{3mm}
+
+\begin{tabular}{|p{6cm}|p{7cm}|}
+\hline
+Dataset Size & 1372\\
+\hline
+Train/Test Split & 1097/275 (80/20)\\
+\hline
+Learning Rate & 0.01\\
+\hline
+Epochs & 40\\
+\hline
+Final Weights & [-0.1545, -0.1740, -0.1750, -0.0051]\\
+\hline
+Final Bias & 0.22\\
+\hline
+Accuracy & 0.9927\\
+\hline
+Precision & 0.9918\\
+\hline
+Recall & 0.9918\\
+\hline
+F1-score & 0.9918\\
+\hline
+\end{tabular}
+
+\vspace{6mm}
+
+\textbf{Epoch wise Learning (lr=0.01)}
+
+\vspace{2mm}
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Epoch & Errors & Weight 1 & Weight 2 & Weight 3 & Weight 4 & Bias \\
+\hline
+1  & 171 & -0.0679 & -0.0462 & -0.0590 &  0.0221 & 0.07 \\
+\hline
+5  & 57  & -0.0988 & -0.0983 & -0.0984 &  0.0111 & 0.13 \\
+\hline
+10 & 43  & -0.1114 & -0.1198 & -0.1274 &  0.0099 & 0.16 \\
+\hline
+15 & 24  & -0.1169 & -0.1380 & -0.1421 &  0.0009 & 0.17 \\
+\hline
+20 & 27  & -0.1286 & -0.1474 & -0.1441 & -0.0067 & 0.19 \\
+\hline
+25 & 31  & -0.1319 & -0.1506 & -0.1608 &  0.0039 & 0.20 \\
+\hline
+30 & 22  & -0.1370 & -0.1639 & -0.1710 & -0.0018 & 0.20 \\
+\hline
+35 & 20  & -0.1450 & -0.1739 & -0.1713 & -0.0013 & 0.21 \\
+\hline
+40 & 20  & -0.1545 & -0.1740 & -0.1750 & -0.0051 & 0.22 \\
+\hline
+\end{tabular}
+
+\vspace{6mm}
+
+
+\vspace{2mm}
+
+\begin{tabular}{|c|c|}
+\hline
+Metric & Value\\
+\hline
+Accuracy & 0.9927\\
+\hline
+Precision & 0.9918\\
+\hline
+Recall & 0.9918\\
+\hline
+F1-score & 0.9918\\
+\hline
+\end{tabular}
+
+\vspace{5mm}
+
+\textbf{Confusion Matrix}
+
+\[
+\begin{bmatrix}
+152 & 1\\
+1 & 121
+\end{bmatrix}
+\]
+
+\vspace{6mm}
+
+\textbf{Learning Rate Comparison}
+
+\vspace{2mm}
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Learning Rate & Epochs & Converged & Accuracy & Precision & Recall & F1-score\\
+\hline
+0.001 & 40 & No & 0.9927 & 0.9918 & 0.9918 & 0.9918\\
+\hline
+0.01 & 40 & No & 0.9927 & 0.9918 & 0.9918 & 0.9918\\
+\hline
+0.1 & 40 & No & 0.9927 & 0.9918 & 0.9918 & 0.9918\\
+\hline
+\end{tabular}
+
+\vspace{3mm}
+
+All 3 learning rates achieved identical classification performance on the banknote dataset. Although none of the models completely converged within 40 epochs, they reached very high accuracy and identical precision, recall and F1 scores.
+
+%----------------------------------------------------------
+
+\section*{9. Additional Tasks}
+
+\subsection*{1. Step vs Sigmoid Activation Function}
+
+The Step Activation Function produces binary outputs and is suitable for classical perceptrons. However, it is not differentiable in between and therefore cannot be used most of the time.
+
+The Sigmoid Activation Function produces smooth outputs between 0 and 1 and is differentiable, making it far more usable.
+
+\vspace{5mm}
+
+\subsection*{2. Comparison with Scikit-learn's Perceptron}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Metric & From Scratch & Scikit-learn\\
+\hline
+Accuracy & 0.9927 & 0.9709\\
+\hline
+Precision & 0.9918 & 0.9385\\
+\hline
+Recall & 0.9918 & 1.0000\\
+\hline
+F1-score & 0.9918 & 0.9683\\
+\hline
+\end{tabular}
+\end{center}
+
+The from scratch implementation slightly outperformed Scikit-learn's Perceptron in all aspects.
+
+\vspace{5mm}
+
+\subsection*{3. Learning Rate Analysis}
+
+The perceptron was trained using learning rates 0.001, 0.01 and 0.1. All three learning rates achieved pretty much identical classification performance. The dataset is not perfectly linearly separable and therefore none of the models completely converged within 40 iterations.
+
+\vspace{5mm}
+
+\subsection*{4. XOR Problem}
+
+A single layer perceptron cannot solve the XOR problem because XOR is not linearly separable. Since a perceptron can learn only a single linear decision boundary, it fails to correctly classify XOR inputs. Multilayer neural networks are required to deal with such issues.
+
+\vspace{5mm}
+
+\subsection*{5. Effect of Feature Normalization}
+
+Feature normalisation improves training stability and helps the perceptron converge more a bit better by ensuring that all features contribute on a similar scale during weight updates.
+
+%----------------------------------------------------------
+%----------------------------------------------------------
+
+\section*{10. Experiment 1 - Extension}
+
+In this extension, the Single Layer Perceptron was implemented from scratch and tested on simple logical classification problems (OR, AND and NOT gates). The objective was to observe how the perceptron learning algorithm updates its weights and bias values over successive epochs until convergence.
+
+\vspace{4mm}
+
+\subsection*{1. OR Gate}
+
+Training Data:
+
+\[
+(0,0)\rightarrow0,\;
+(0,1)\rightarrow1,\;
+(1,0)\rightarrow1,\;
+(1,1)\rightarrow1
+\]
+
+\vspace{2mm}
+
+\textbf{Training Summary}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Epoch & Weight Vector & Bias & Status\\
+\hline
+Initial & [0.0, 0.0] & 0.0 & Initialized\\
+\hline
+1 & [0.0, 0.1] & 0.0 & Updated\\
+\hline
+2 & [0.1, 0.1] & 0.0 & Updated\\
+\hline
+3 & [0.1, 0.1] & -0.1 & Updated\\
+\hline
+4 & [0.1, 0.1] & -0.1 & Converged\\
+\hline
+\end{tabular}
+\end{center}
+
+The perceptron successfully converged in 4 epochs and learned the OR logic. Since the OR gate is linearly separable, one linear decision boundary is enough for separation. It also takes very few epochs to achieve this.
+
+\vspace{5mm}
+
+%----------------------------------------------------------
+
+\subsection*{2. AND Gate}
+
+Training Data:
+
+\[
+(0,0)\rightarrow0,\;
+(0,1)\rightarrow0,\;
+(1,0)\rightarrow0,\;
+(1,1)\rightarrow1
+\]
+
+\vspace{2mm}
+
+\textbf{Training Summary}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Epoch & Weight Vector & Bias & Status\\
+\hline
+Initial & [0.0, 0.0] & 0.0 & Initialized\\
+\hline
+1 & [0.1, 0.1] & 0.0 & Updated\\
+\hline
+2 & [0.2, 0.1] & -0.1 & Updated\\
+\hline
+3 & [0.2, 0.1] & -0.2 & Updated\\
+\hline
+4 & [0.2, 0.1] & -0.2 & Converged\\
+\hline
+\end{tabular}
+\end{center}
+
+The AND gate also converged successfully in 4 epochs. Similar to the OR gate, the logic is simple and linear, and does not take long to learn and arrive at a solution.
+
+\vspace{5mm}
+
+%----------------------------------------------------------
+
+\subsection*{3. NOT Gate}
+
+Training Data:
+
+\[
+0\rightarrow1,\qquad1\rightarrow0
+\]
+
+\vspace{2mm}
+
+\textbf{Training Summary}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Epoch & Weight & Bias & Status\\
+\hline
+Initial & 0.0 & 0.0 & Initialized\\
+\hline
+1 & -0.1 & -0.1 & Updated\\
+\hline
+2 & -0.1 & 0.0 & Updated\\
+\hline
+3 & -0.1 & 0.0 & Converged\\
+\hline
+\end{tabular}
+\end{center}
+
+The perceptron converged in only 3 epochs for the NOT gate. The learned negative weight effectively inverts the input, demonstrating how perceptrons can represent unary logical operations using a simple linear model.
+
+\vspace{5mm}
+
+%----------------------------------------------------------
+
+\subsection*{4. Plots}
+
+The figures below show the evolution of the decision boundary during training for each logic gate, from the initial state to each epoch of weight updates, up to the final converged boundary.
+
+\vspace{3mm}
+
+\textbf{OR Gate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/or_gate0.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/or_gate1.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/or_gate2.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/or_gate3.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/or_gate4.png}
+
+\end{figure}
+
+\vspace{3mm}
+
+\textbf{AND Gate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/and_gate0.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/and_gate1.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/and_gate2.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/and_gate3.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/and_gate4.png}
+
+\end{figure}
+
+\vspace{3mm}
+
+\textbf{NOT Gate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/not_gate0.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/not_gate1.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/not_gate2.png}
+
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/not_gate3.png}
+\end{figure}
+
+\vspace{5mm}
+
+%----------------------------------------------------------
+
+\subsection*{5. Observations}
+
+\begin{itemize}
+
+\item All three logical functions are linearly separable and were learned successfully by the single layer perceptron.
+
+\item The perceptron required only a few epochs to converge, highlighting the efficiency of the perceptron learning rule for simple binary classification tasks.
+
+\item Weight updates occur only when a sample is misclassified. Once all samples are classified correctly in an epoch, it has reached convergence.
+
+\item The bias term is very important. In the AND gate, a negative bias ensures that both inputs must contribute positively for the output to become 1.
+
+\end{itemize}
+
+%----------------------------------------------------------
+
+
+\section*{11. References}
+
+\begin{enumerate}
+\item F. Rosenblatt, ``The Perceptron,'' \emph{Psychological Review}, 1958.
+\item I. Goodfellow, Y. Bengio and A. Courville, \emph{Deep Learning}, MIT Press, 2016.
+\item C. M. Bishop, \emph{Pattern Recognition and Machine Learning}, Springer, 2006.
+\item S. Haykin, \emph{Neural Networks and Learning Machines}, Pearson, 2009.
+\item UCI Machine Learning Repository -- Banknote Authentication Dataset.
+\item Scikit-learn Documentation: Perceptron.
+\end{enumerate}
+
+\end{document}
