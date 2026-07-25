@@ -299,22 +299,155 @@ Training Time & 162.78s & 59.28s\\
  
 \begin{enumerate}
 \item \textbf{Which optimization method was used?} \\
-\textit{RandomizedSearchCV with 3 fold cross validation over 5 sampled configurations}
+RandomizedSearchCV with 3 fold cross validation over 5 sampled configurations
 \item \textbf{Which hyperparameters were selected?} \\
-\textit{1 hidden layer, 256 neurons, learning rate 0.001, batch size 64, Adam optimizer, Tanh activation, 10 epochs.}
+1 hidden layer, 256 neurons, learning rate 0.001, batch size 64, Adam optimizer, Tanh activation, 10 epochs.
 \item \textbf{Did optimization improve performance?} \\
-\textit{The optimized model scored 0.8754 vs the baseline's 0.8805 test accuracy, a slight decrease. However, what improved was training efficiency: 59.28s vs 162.78s, significantly faster}
+The optimized model scored 0.8754 vs the baseline's 0.8805 test accuracy, a slight decrease. However, what improved was training efficiency: 59.28s vs 162.78s, significantly faster
 \item \textbf{Which hyperparameter had the greatest impact?} \\
-\textit{Using only 1 hidden layer (vs the baseline's 2) and still landing within half a point of baseline accuracy, hidden layer depth appears to trade off against training time more than it costs accuracy for this dataset.}
+Using only 1 hidden layer (vs the baseline's 2) and still landing within half a point of baseline accuracy, hidden layer depth appears to trade off against training time more than it costs accuracy for this dataset.
 \item \textbf{Compare Grid Search and Randomized Search.} \\
-\textit{Grid Search exhaustively evaluates every combination in the search space, guaranteeing the best result within the grid. Randomized Search samples a fixed number of combinations at random. It is less exhaustive but takes a lot less time.}
+Grid Search exhaustively evaluates every combination in the search space, guaranteeing the best result within the grid. Randomized Search samples a fixed number of combinations at random. It is less exhaustive but takes a lot less time.
 \item \textbf{Recommend the best MLP configuration.} \\
-\textit{1 hidden layer of 256 neurons with Tanh activation, Adam optimizer at learning rate 0.001, batch size 64, trained for 10 epochs with no dropout.}
+1 hidden layer of 256 neurons with Tanh activation, Adam optimizer at learning rate 0.001, batch size 64, trained for 10 epochs with no dropout.
 \end{enumerate}
 
 
 
-\section*{11. References}
+\section*{11. Experiment 2 - Extension: XOR Gate using a Multi Layer Perceptron}
+
+The XOR gate is not linearly separable, so a single layer perceptron can never converge on it (no straight line can separate the two classes). In this extension, a Multi Layer Perceptron, trained from scratch using backpropagation and gradient descent, was used to learn the XOR function instead.
+
+\vspace{2mm}
+
+Training Data:
+
+\[
+(0,0)\rightarrow0,\;
+(0,1)\rightarrow1,\;
+(1,0)\rightarrow1,\;
+(1,1)\rightarrow0
+\]
+
+\vspace{3mm}
+
+\subsection*{1. Training Log}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Epoch} & \textbf{Loss (MSE)} & \textbf{Predictions} & \textbf{Target}\\
+\hline
+1    & 0.25087 & [0, 1, 0, 1] & [0, 1, 1, 0]\\
+\hline
+500  & 0.09661 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+1000 & 0.01005 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+1500 & 0.00412 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+2000 & 0.00245 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+2500 & 0.00169 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+3000 & 0.00128 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+3500 & 0.00102 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+4000 & 0.00084 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+4500 & 0.00071 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+5000 & 0.00062 & [0, 1, 1, 0] & [0, 1, 1, 0]\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+
+\textbf{Final Result}
+
+\begin{center}
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+Final Predictions & [0, 1, 1, 0]\\
+\hline
+Target Labels & [0, 1, 1, 0]\\
+\hline
+Accuracy & 100.0\%\\
+\hline
+\end{tabular}
+\end{center}
+
+The loss decreases sharply within the first $\sim$500--1000 epochs and then flattens out, with predictions matching the target labels exactly from epoch 500 onward - unlike a single layer perceptron, which would not reach convergence given such a problem.
+
+\vspace{5mm}
+
+\subsection*{2. Decision Boundary Evolution}
+
+The plots below track how the MLP's decision boundary changes over training. Since the network has a hidden layer, the boundary is a curve rather than a single straight line, which is precisely what allows it to separate XOR.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate0.png}
+    \caption{Initial (Untrained) Decision Boundary -- Epoch 0}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate1.png}
+    \caption{Decision Boundary after Epoch 1 }
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate2.png}
+    \caption{Decision Boundary at Epoch 50 }
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate3.png}
+    \caption{Decision Boundary at Epoch 200}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate4.png}
+    \caption{Decision Boundary at Epoch 1000}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate5.png}
+    \caption{Final Decision Boundary at Epoch 5000}
+\end{figure}
+
+\vspace{3mm}
+
+\subsection*{3. Training Loss Curve}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/xor_gate6.png}
+    \caption{Training Loss (MSE) vs Epoch}
+\end{figure}
+
+\textbf{Observation:} The loss drops steeply between roughly epoch 200 and 1000. This is exactly the window in which the decision boundary visibly bends from a near straight line into the curve that separates the two XOR classes.
+
+\vspace{5mm}
+
+\subsection*{4. Observations}
+
+\begin{itemize}
+\item A single layer perceptron cannot solve XOR because the problem is not linearly separable; a multi layer perceptron overcomes this by learning a hidden representation that reshapes the input space, allowing a nonlinear decision boundary.
+\item The decision boundary starts out nearly linear, and only develops its characteristic curve as training progresses past a few hundred epochs.
+\item The network achieves 100\% accuracy before the full 5000 epochs, though loss continues to decrease slightly further.
+\end{itemize}
+
+%----------------------------------------------------------
+
+\section*{12. References}
 \begin{enumerate}
 \item Goodfellow et al., \emph{Deep Learning}.
 \item Bishop, \emph{Pattern Recognition and Machine Learning}.
