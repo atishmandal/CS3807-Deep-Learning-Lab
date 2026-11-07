@@ -5,3 +5,5 @@ Hyperparameters were varied and the results were noted.
 Files in this repo
 1) dllab7.py - the code file
 2) Exp7_Atish - the final report
+3) exp7.pdf - the original reference file
+4) README.md
